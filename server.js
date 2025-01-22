@@ -52,6 +52,11 @@ app.get("/randomline", async (req, res) => {
     }
 });
 
+app.get('/fight', (req, res) => {
+  const user = req.query.user || req.query.fallback;
+  res.send(user);
+});
+
 
 // Default route
 app.get("/", (req, res) => {
