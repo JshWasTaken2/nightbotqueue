@@ -36,7 +36,7 @@ function saveQueue() {
 
 
 
-/*app.get("/randomline", async (req, res) => {
+app.get("/randomline", async (req, res) => {
     try {
         const response = await axios.get("https://pastebin.com/raw/nwYG6VsA", {
             headers: {
@@ -55,9 +55,9 @@ function saveQueue() {
 app.get('/fight', (req, res) => {
   const user = req.query.user || req.query.fallback;
   res.send(user);
-});*/
+});
 
-app.get("/fight", (req, res) => {
+/*app.get("/fight", (req, res) => {
     const sender = req.query.sender || "Unknown"; // User who sent the command
     const queryString = req.query.touser || ""; // Text after "!fight"
     console.log("Sender:", sender);
@@ -86,7 +86,7 @@ app.get("/fight", (req, res) => {
 
     const responseMessage = `${sender} has picked a fight with ${opponent} and ${outcome}`;
     res.send(responseMessage);
-});
+});*/
 
 
 
