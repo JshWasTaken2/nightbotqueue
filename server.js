@@ -36,7 +36,7 @@ function saveQueue() {
 
 
 
-app.get("/randomline", async (req, res) => {
+/*app.get("/randomline", async (req, res) => {
     try {
         const response = await axios.get("https://pastebin.com/raw/nwYG6VsA", {
             headers: {
@@ -55,7 +55,40 @@ app.get("/randomline", async (req, res) => {
 app.get('/fight', (req, res) => {
   const user = req.query.user || req.query.fallback;
   res.send(user);
+});*/
+
+const outcomes = [
+    "landed a devastating blow!", 
+    "missed completely!", 
+    "fought valiantly but lost.", 
+    "won in an epic showdown!", 
+    "was knocked out instantly!"
+];
+
+const chatUsers = ["RandomUser1", "RandomUser2", "RandomUser3"]; // Placeholder list of chatters
+
+app.get("/fight", (req, res) => {
+    const sender = req.query.sender || "Unknown"; // User who sent the command
+    const target = req.query.touser || null; // Optional target specified by the sender
+
+    let opponent, outcome;
+
+    // If a target is provided, use it; otherwise, pick a random chatter
+    if (target && target !== sender) {
+        opponent = target.replace("@", "").trim();
+    } else {
+        // Randomly pick a user from a simulated chat list excluding the sender
+        const filteredChatUsers = chatUsers.filter((user) => user !== sender);
+        opponent = filteredChatUsers[Math.floor(Math.random() * filteredChatUsers.length)] || "themselves";
+    }
+
+    // Randomize fight outcome
+    outcome = outcomes[Math.floor(Math.random() * outcomes.length)];
+
+    const responseMessage = `${sender} has picked a fight with ${opponent} and ${outcome}`;
+    res.send(responseMessage);
 });
+
 
 
 // Default route
