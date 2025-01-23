@@ -59,7 +59,10 @@ app.get('/fight', (req, res) => {
 
 app.get("/fight", (req, res) => {
     const sender = req.query.sender || "Unknown"; // User who sent the command
-    const queryString = req.query.touser || ""; // The raw text after "!fight"
+    const queryString = req.query.touser || ""; // Text after "!fight"
+    console.log("Sender:", sender);
+    console.log("QueryString (touser):", queryString);
+
     const outcomes = [
         "landed a devastating blow!",
         "missed completely!",
@@ -72,19 +75,17 @@ app.get("/fight", (req, res) => {
     let opponent;
     let outcome = outcomes[Math.floor(Math.random() * outcomes.length)]; // Random fight outcome
 
-    // Check if a specific opponent (touser) was provided
     if (queryString.trim()) {
         opponent = queryString.replace("@", "").trim(); // Use the specified target
     } else {
-        // Randomly pick a user from a simulated chat list, excluding the sender
         const filteredChatUsers = chatUsers.filter((user) => user !== sender);
         opponent = filteredChatUsers[Math.floor(Math.random() * filteredChatUsers.length)] || "themselves";
     }
 
-    // Format the response message
     const responseMessage = `${sender} has picked a fight with ${opponent} and ${outcome}`;
     res.send(responseMessage);
 });
+
 
 
 
