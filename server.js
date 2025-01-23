@@ -79,7 +79,9 @@ app.get("/fight", (req, res) => {
         opponent = queryString.replace("@", "").trim(); // Use the specified target
     } else {
         const filteredChatUsers = chatUsers.filter((user) => user !== sender);
-        opponent = filteredChatUsers[Math.floor(Math.random() * filteredChatUsers.length)] || "themselves";
+        opponent = filteredChatUsers.length > 0 
+            ? filteredChatUsers[Math.floor(Math.random() * filteredChatUsers.length)] 
+            : "a shadow"; // Default to "a shadow" if no one else is available
     }
 
     const responseMessage = `${sender} has picked a fight with ${opponent} and ${outcome}`;
