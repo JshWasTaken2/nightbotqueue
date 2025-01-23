@@ -52,10 +52,10 @@ app.get("/randomline", async (req, res) => {
     }
 });
 
-app.get('/fight', (req, res) => {
+/*app.get('/fight', (req, res) => {
   const user = req.query.user || req.query.fallback;
   res.send(user);
-});
+});*/
 
 /*app.get("/fight", (req, res) => {
     const sender = req.query.sender || "Unknown"; // User who sent the command
