@@ -36,7 +36,7 @@ function saveQueue() {
 
 
 
-/*app.get("/randomline", async (req, res) => {
+app.get("/randomline", async (req, res) => {
     try {
         const response = await axios.get("https://pastebin.com/raw/nwYG6VsA", {
             headers: {
@@ -55,9 +55,9 @@ function saveQueue() {
 app.get('/fight', (req, res) => {
   const user = req.query.user || req.query.fallback;
   res.send(user);
-});*/
+});
 
-const outcomes = [
+/*const outcomes = [
     "landed a devastating blow!", 
     "missed completely!", 
     "fought valiantly but lost.", 
@@ -87,7 +87,7 @@ app.get("/fight", (req, res) => {
 
     const responseMessage = `${sender} has picked a fight with ${opponent} and ${outcome}`;
     res.send(responseMessage);
-});
+});*/
 
 
 
