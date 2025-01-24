@@ -52,6 +52,17 @@ app.get("/randomline", async (req, res) => {
     }
 });
 
+app.get("/fight", async (req, res) => {
+    const pastebinURL = "https://pastebin.com/raw/nwYG6VsA";
+    const response = await fetch(pastebinURL);
+    const text = await response.text();
+    const lines = text.split("\n");
+    const randomLine = lines[Math.floor(Math.random() * lines.length)];
+    res.send(randomLine);
+});
+
+
+
 /*app.get('/fight', (req, res) => {
   const user = req.query.user || req.query.fallback;
   res.send(user);
