@@ -124,7 +124,6 @@ app.get("/queue", (req, res) => {
         const formattedQueue = queue
             .map((entry, index) => `${index + 1}. ${entry.item} (${entry.user})`)
             .join(" | ");
-        res.set("Content-Type", "text/plain");
         return res.send(`Current Queue: ${formattedQueue}`);
     } else {
         return res.send("The queue is currently empty.");
