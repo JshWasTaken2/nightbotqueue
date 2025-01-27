@@ -81,7 +81,8 @@ app.get("/quotes", async (req, res) => {
 
         // Format the list for display
         const formattedQuotes = quotesList.join("\n"); // Join with newlines for plain text response
-
+        
+        res.set("Content-Type", "text/plain");
         res.send(formattedQuotes); // Respond with the entire list
     } catch (error) {
         console.error(`Error fetching quotes: ${error.message}`);
