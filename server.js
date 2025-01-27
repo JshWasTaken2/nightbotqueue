@@ -247,9 +247,9 @@ app.get("/open-queue", (req, res) => {
     if (!selfPingInterval) {
         selfPingInterval = setInterval(() => {
             http.get(projectUrl, (res) => {
-                console.log(Pinged ${projectUrl}: ${res.statusCode});
+                console.log(`Pinged ${projectUrl}: ${res.statusCode}`);
             }).on("error", (err) => {
-                console.error(Error pinging ${projectUrl}: ${err.message});
+                console.error(`Error pinging ${projectUrl}: ${err.message}`);
             });
         }, 300000); // Ping every 5 minutes (300,000 ms)
         console.log("Self-pinging activated.");
@@ -275,5 +275,5 @@ app.get("/close-queue", (req, res) => {
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(Server running on http://localhost:${3000});
+    console.log(`Server running on http://localhost:${3000}`);
 });
