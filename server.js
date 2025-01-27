@@ -84,7 +84,7 @@ app.get("/quotes", async (req, res) => {
         res.set("Content-Type", "text/plain");
         res.send(formattedQuotes); // Respond with the entire list
     } catch (error) {
-        console.error(Error fetching quotes: ${error.message});
+        console.error(`Error fetching quotes: ${error.message}`);
         res.status(500).send("Failed to fetch quotes. Please try again later.");
     }
 });
