@@ -138,7 +138,7 @@ app.get("/queue-list", (req, res) => {
 
         // Set Content-Type to text/plain to ensure newlines are rendered
         res.set("Content-Type", "text/plain");
-        return res.send(Current Queue:\n${formattedQueue});
+        return res.send(`Current Queue:\n${formattedQueue}`);
     } else {
         // Set Content-Type to text/plain for consistency
         res.set("Content-Type", "text/plain");
