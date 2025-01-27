@@ -122,7 +122,7 @@ app.get("/", (req, res) => {
 app.get("/queue", (req, res) => {
     if (queue.length > 0) {
         const formattedQueue = queue
-            .map((entry, index) => ${index + 1}. ${entry.item} (${entry.user}))
+            .map((entry, index) => `${index + 1}. ${entry.item} (${entry.user})`)
             .join(" | ");
         return res.send(Current Queue: ${formattedQueue});
     } else {
