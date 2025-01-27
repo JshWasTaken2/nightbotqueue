@@ -121,14 +121,21 @@ app.get("/", (req, res) => {
 // Endpoint to display the queue
 app.get("/queue", (req, res) => {
     if (queue.length > 0) {
+        // Format the queue with each item on a new line
         const formattedQueue = queue
             .map((entry, index) => `${index + 1}. ${entry.item} (${entry.user})`)
-            .join(" | ");
-        return res.send(`Current Queue: ${formattedQueue}`);
+            .join("\n"); // Use newline character for plain text formatting
+
+        // Set Content-Type to text/plain to ensure newlines are rendered
+        res.set("Content-Type", "text/plain");
+        return res.send(`Current Queue:\n${formattedQueue}`);
     } else {
+        // Set Content-Type to text/plain for consistency
+        res.set("Content-Type", "text/plain");
         return res.send("The queue is currently empty.");
     }
 });
+
 
 // Endpoint to show the next item in the queue
 app.get("/next", (req, res) => {
