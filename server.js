@@ -102,7 +102,7 @@ app.get('/api/fight', (req, res) => {
   const target = touser || randomChatter || "someone";
 
   // Response message
-  const message = "${sender} picked a fight with ${target} $(urlfetch https://pastebin.com/raw/nwYG6VsA!)";
+  const message = `${sender} picked a fight with ${target} $(urlfetch https://pastebin.com/raw/nwYG6VsA!)`;
 
   res.status(200).send(message);
 });
