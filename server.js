@@ -52,6 +52,7 @@ app.get("/randomline", async (req, res) => {
     }
 });
 
+
 app.get("/fight", async (req, res) => {
     const pastebinURL = "https://pastebin.com/raw/nwYG6VsA";
     const response = await fetch(pastebinURL);
@@ -62,42 +63,31 @@ app.get("/fight", async (req, res) => {
 });
 
 
+// Endpoint to fetch and display the entire list from an external URL
+app.get("/quotes", async (req, res) => {
+    const externalUrl = "https://twitch.center/customapi/quote/list?token=219131ad";
 
-/*app.get('/fight', (req, res) => {
-  const user = req.query.user || req.query.fallback;
-  res.send(user);
-});*/
+    try {
+        // Fetch the content from the external URL
+        const response = await fetch(externalUrl);
 
-/*app.get("/fight", (req, res) => {
-    const sender = req.query.sender || "Unknown"; // User who sent the command
-    const queryString = req.query.touser || ""; // Text after "!fight"
-    console.log("Sender:", sender);
-    console.log("QueryString (touser):", queryString);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch quotes: ${response.statusText}`);
+        }
 
-    const outcomes = [
-        "landed a devastating blow!",
-        "missed completely!",
-        "fought valiantly but lost.",
-        "won in an epic showdown!",
-        "was knocked out instantly!"
-    ];
-    const chatUsers = ["RandomUser1", "RandomUser2", "RandomUser3"]; // Placeholder list of chatters
+        // Get the list of quotes and split them into lines
+        const data = await response.text();
+        const quotesList = data.split("\n").map((quote) => quote.trim()).filter((quote) => quote); // Clean up empty lines
 
-    let opponent;
-    let outcome = outcomes[Math.floor(Math.random() * outcomes.length)]; // Random fight outcome
+        // Format the list for display
+        const formattedQuotes = quotesList.join("\n"); // Join with newlines for plain text response
 
-    if (queryString.trim()) {
-        opponent = queryString.replace("@", "").trim(); // Use the specified target
-    } else {
-        const filteredChatUsers = chatUsers.filter((user) => user !== sender);
-        opponent = filteredChatUsers.length > 0 
-            ? filteredChatUsers[Math.floor(Math.random() * filteredChatUsers.length)] 
-            : "a shadow"; // Default to "a shadow" if no one else is available
+        res.send(formattedQuotes); // Respond with the entire list
+    } catch (error) {
+        console.error(`Error fetching quotes: ${error.message}`);
+        res.status(500).send("Failed to fetch quotes. Please try again later.");
     }
-
-    const responseMessage = `${sender} has picked a fight with ${opponent} and ${outcome}`;
-    res.send(responseMessage);
-});*/
+});
 
 // Add a route for /api/fight
 app.get('/api/fight', (req, res) => {
