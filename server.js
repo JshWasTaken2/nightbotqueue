@@ -131,7 +131,7 @@ app.get("/queue", (req, res) => {
 });
 
 // New endpoint to display the queue with each item on a new line
-app.get("/queue-lines", (req, res) => {
+app.get("/queue-list", (req, res) => {
     if (queue.length > 0) {
         const formattedQueue = queue
             .map((entry, index) => `${index + 1}. ${entry.item} (${entry.user})`)
