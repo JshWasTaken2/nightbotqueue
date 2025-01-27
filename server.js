@@ -2,7 +2,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const fs = require("fs");
 const http = require("http");
-const path = require("path");
 const app = express();
 const axios = require("axios");
 
@@ -14,6 +13,8 @@ let queueOpen = true; // Flag to track whether the queue is open
 let selfPingInterval; // Variable to store the self-ping interval ID
 const projectUrl = "https://nightbotqueue.vercel.app/";
 
+
+// Load the queue from the file on server startup
 if (fs.existsSync(queueFile)) {
     try {
         queue = JSON.parse(fs.readFileSync(queueFile, "utf-8"));
@@ -23,6 +24,8 @@ if (fs.existsSync(queueFile)) {
     }
 }
 
+
+// Function to save the queue to the file
 function saveQueue() {
     try {
         fs.writeFileSync(queueFile, JSON.stringify(queue, null, 2), "utf-8");
@@ -31,112 +34,247 @@ function saveQueue() {
     }
 }
 
-// Serve HTML for /queue
-app.get("/queue", (req, res) => {
-    res.sendFile(path.join(__dirname, "queue.html"));
-});
 
-// Serve HTML for /queue-list
-app.get("/queue-list", (req, res) => {
-    res.sendFile(path.join(__dirname, "queue-list.html"));
-});
 
-// API endpoint to fetch /queue data in plain text
-app.get("/queue-text", (req, res) => {
-    if (queue.length > 0) {
-        const formattedQueue = queue
-            .map((entry, index) => `${index + 1}. ${entry.item} (${entry.user})`)
-            .join(" | "); // Original continuous format
-        res.send(`Current Queue: ${formattedQueue}`);
-    } else {
-        res.send("The queue is currently empty.");
+app.get("/randomline", async (req, res) => {
+    try {
+        const response = await axios.get("https://pastebin.com/raw/nwYG6VsA", {
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            }
+        });
+        const lines = response.data.split("\n");
+        const randomLine = lines[Math.floor(Math.random() * lines.length)];
+        res.send(randomLine);
+    } catch (error) {
+        console.error("Error fetching Pastebin:", error);
+        res.status(500).send("Error fetching data");
     }
 });
 
-// API endpoint to fetch /queue-list data in plain text
-app.get("/queue-list-text", (req, res) => {
-    if (queue.length > 0) {
-        const formattedQueue = queue
-            .map((entry, index) => `${index + 1}. ${entry.item} (${entry.user})`)
-            .join("\n"); // Each item on a new line
+
+app.get("/fight", async (req, res) => {
+    const pastebinURL = "https://pastebin.com/raw/nwYG6VsA";
+    const response = await fetch(pastebinURL);
+    const text = await response.text();
+    const lines = text.split("\n");
+    const randomLine = lines[Math.floor(Math.random() * lines.length)];
+    res.send(randomLine);
+});
+
+
+// Endpoint to fetch and display the entire list from an external URL
+app.get("/quotes", async (req, res) => {
+    const externalUrl = "https://twitch.center/customapi/quote/list?token=219131ad";
+
+    try {
+        // Fetch the content from the external URL
+        const response = await fetch(externalUrl);
+
+        if (!response.ok) {
+            throw new Error(Failed to fetch quotes: ${response.statusText});
+        }
+
+        // Get the list of quotes and split them into lines
+        const data = await response.text();
+        const quotesList = data.split("\n").map((quote) => quote.trim()).filter((quote) => quote); // Clean up empty lines
+
+        // Format the list for display
+        const formattedQuotes = quotesList.join("\n"); // Join with newlines for plain text response
+        
         res.set("Content-Type", "text/plain");
-        res.send(`Current Queue:\n${formattedQueue}`);
-    } else {
-        res.set("Content-Type", "text/plain");
-        res.send("The queue is currently empty.");
+        res.send(formattedQuotes); // Respond with the entire list
+    } catch (error) {
+        console.error(Error fetching quotes: ${error.message});
+        res.status(500).send("Failed to fetch quotes. Please try again later.");
     }
 });
 
-// Real-time updates via Server-Sent Events (SSE)
-app.get("/queue-updates", (req, res) => {
-    res.set({
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        "Connection": "keep-alive",
-    });
+// Add a route for /api/fight
+app.get('/api/fight', (req, res) => {
+  const { sender, touser, randomChatter } = req.query;
 
-    // Send an initial message to keep the connection open
-    res.write("event: ping\n\n");
+  // Validate query parameters
+  if (!sender) {
+    return res.status(400).send("Missing 'sender' parameter");
+  }
 
-    // Send a ping message every 30 seconds to keep the connection alive
-    const intervalId = setInterval(() => {
-        res.write("event: ping\n\n");
-    }, 30000);
+  // Determine the target
+  const target = touser || randomChatter || "someone";
 
-    // When the client closes the connection, clear the interval
-    req.on("close", () => {
-        clearInterval(intervalId);
-    });
+  // Response message
+  const message = ${sender} picked a fight with ${target} $(urlfetch https://pastebin.com/raw/nwYG6VsA!);
+
+  res.status(200).send(message);
 });
 
-// Add queue-related endpoints (original functionality is unchanged)
+
+
+
+// Default route
 app.get("/", (req, res) => {
-    res.send("Welcome to the Nightbot Queue Manager! Use /queue, /queue-list, /add-to-queue, /clear-queue, /open-queue, /close-queue, or /next.");
+    res.send("Welcome to the Nightbot Queue Manager! Use /queue, /add-to-queue, /clear-queue, /open-queue, /close-queue, or /next.");
+  
 });
 
-app.get("/add-to-queue", (req, res) => {
-    const user = req.query.user || "anonymous";
-    const message = req.query.message || "";
+
+// Endpoint to display the queue in the original format (continuous list for Nightbot)
+app.get("/queue", (req, res) => {
+    if (queue.length > 0) {
+        const formattedQueue = queue
+            .map((entry, index) => ${index + 1}. ${entry.item} (${entry.user}))
+            .join(" | "); // Keep the original format with " | "
+        return res.send(Current Queue: ${formattedQueue});
+    } else {
+        return res.send("The queue is currently empty.");
+    }
+});
+
+// New endpoint to display the queue with each item on a new line
+app.get("/queue-list", (req, res) => {
+    if (queue.length > 0) {
+        const formattedQueue = queue
+            .map((entry, index) => ${index + 1}. ${entry.item} (${entry.user}))
+            .join("\n"); // Use newline character for plain text formatting
+
+        // Set Content-Type to text/plain to ensure newlines are rendered
+        res.set("Content-Type", "text/plain");
+        return res.send(Current Queue:\n${formattedQueue});
+    } else {
+        // Set Content-Type to text/plain for consistency
+        res.set("Content-Type", "text/plain");
+        return res.send("The queue is currently empty.");
+    }
+});
+
+
+
+
+
+// Endpoint to show the next item in the queue
+app.get("/next", (req, res) => {
+    if (queue.length > 0) {
+        const nextItem = queue[0];
+        return res.send(Next in queue: ${nextItem.item} (${nextItem.user}));
+    } else {
+        return res.send("The queue is currently empty.");
+    }
+});
+
+// POST endpoint to handle the "!queue" command
+app.post("/add-to-queue", (req, res) => {
+    const { user, message } = req.body;
 
     if (!queueOpen) {
-        return res.send(`@${user}, the queue is currently closed. You cannot add items right now.`);
+        return res.send(@${user}, the queue is currently closed. You cannot add items right now.);
     }
 
     const queueItem = message.replace("!queue ", "").trim();
     if (queueItem) {
         queue.push({ user, item: queueItem });
         saveQueue(); // Save the queue to the file
-
-        // Trigger real-time updates
-        sendQueueUpdate();
-
-        return res.send(`@${user}, your item has been added to the queue! Current queue length: ${queue.length} items.`);
+        return res.send(@${user}, your item has been added to the queue! Current queue length: ${queue.length} items.);
     } else {
-        return res.send(`@${user}, please provide an item to add to the queue. Usage: !queue <item>`);
+        return res.send(@${user}, please provide an item to add to the queue. Usage: !queue <item>);
     }
 });
 
-app.get("/clear-queue", (req, res) => {
-    queue = [];
-    saveQueue();
+// GET endpoint for /add-to-queue (Nightbot-compatible)
+app.get("/add-to-queue", (req, res) => {
+    const user = req.query.user || "anonymous";
+    const message = req.query.message || "";
 
-    // Trigger real-time updates
-    sendQueueUpdate();
+    if (!queueOpen) {
+        return res.send(@${user}, the queue is currently closed. You cannot add items right now.);
+    }
 
-    res.send("The queue has been cleared!");
+    const queueItem = message.replace("!queue ", "").trim();
+    if (queueItem) {
+        queue.push({ user, item: queueItem });
+        saveQueue(); // Save the queue to the file
+        return res.send(@${user}, your item has been added to the queue! Current queue length: ${queue.length} items.);
+    } else {
+        return res.send(@${user}, please provide an item to add to the queue. Usage: !queue <item>);
+    }
 });
 
-// Utility to trigger real-time updates
-function sendQueueUpdate() {
-    http.get(`${projectUrl}/queue-updates`, (res) => {
-        console.log("Triggered real-time update.");
-    }).on("error", (err) => {
-        console.error("Failed to trigger real-time update:", err.message);
-    });
-}
+// POST endpoint to clear the queue
+app.post("/clear-queue", (req, res) => {
+    queue = [];
+    saveQueue(); // Save the cleared queue to the file
+    return res.send("The queue has been cleared!");
+});
+
+// GET endpoint for /clear-queue (Nightbot-compatible)
+app.get("/clear-queue", (req, res) => {
+    queue = [];
+    saveQueue(); // Save the cleared queue to the file
+    return res.send("The queue has been cleared!");
+});
+
+// POST endpoint to remove a specific item from the queue
+app.post("/remove-from-queue", (req, res) => {
+    const { user, message } = req.body;
+
+    const position = parseInt(message.replace("!removequeue ", "").trim(), 10);
+
+    if (!isNaN(position) && position > 0 && position <= queue.length) {
+        const removedItem = queue.splice(position - 1, 1); // Remove the item at the given position
+        saveQueue(); // Save the updated queue to the file
+        return res.send(@${user}, item #${position} has been removed from the queue!);
+    } else {
+        return res.send(@${user}, invalid position. Please provide a valid queue number to remove.);
+    }
+});
+
+// GET endpoint for /remove-from-queue (Nightbot-compatible)
+app.get("/remove-from-queue", (req, res) => {
+    const position = parseInt(req.query.position, 10);
+
+    if (!isNaN(position) && position > 0 && position <= queue.length) {
+        const removedItem = queue.splice(position - 1, 1); // Remove the item at the given position
+        saveQueue(); // Save the updated queue to the file
+        return res.send(Item #${position} has been removed from the queue!);
+    } else {
+        return res.send("Invalid position. Please provide a valid queue number to remove.");
+    }
+});
+
+// Endpoint to open the queue and start self-pinging
+app.get("/open-queue", (req, res) => {
+    queueOpen = true;
+
+    // Start self-pinging
+    if (!selfPingInterval) {
+        selfPingInterval = setInterval(() => {
+            http.get(projectUrl, (res) => {
+                console.log(Pinged ${projectUrl}: ${res.statusCode});
+            }).on("error", (err) => {
+                console.error(Error pinging ${projectUrl}: ${err.message});
+            });
+        }, 300000); // Ping every 5 minutes (300,000 ms)
+        console.log("Self-pinging activated.");
+    }
+
+    res.send("The queue is now open!");
+});
+
+// Endpoint to close the queue and stop self-pinging
+app.get("/close-queue", (req, res) => {
+    queueOpen = false;
+
+    // Stop self-pinging
+    if (selfPingInterval) {
+        clearInterval(selfPingInterval);
+        selfPingInterval = null;
+        console.log("Self-pinging deactivated.");
+    }
+
+    res.send("The queue is now closed!");
+});
 
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(Server running on http://localhost:${3000});
 });
