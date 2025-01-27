@@ -71,7 +71,7 @@ app.get("/quotes", async (req, res) => {
         const response = await fetch(externalUrl);
 
         if (!response.ok) {
-            throw new Error(Failed to fetch quotes: ${response.statusText});
+            throw new Error(`Failed to fetch quotes: ${response.statusText}`);
         }
 
         // Get the list of quotes and split them into lines
