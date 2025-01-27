@@ -123,7 +123,7 @@ app.get("/queue", (req, res) => {
         const formattedQueue = queue
             .map((entry, index) => `${index + 1}. ${entry.item} (${entry.user})`)
             .join(" | "); // Keep the original format with " | "
-        return res.send(Current Queue: ${formattedQueue});
+        return res.send(`Current Queue: ${formattedQueue}`);
     } else {
         return res.send("The queue is currently empty.");
     }
@@ -133,7 +133,7 @@ app.get("/queue", (req, res) => {
 app.get("/queue-list", (req, res) => {
     if (queue.length > 0) {
         const formattedQueue = queue
-            .map((entry, index) => ${index + 1}. ${entry.item} (${entry.user}))
+            .map((entry, index) => `${index + 1}. ${entry.item} (${entry.user})`)
             .join("\n"); // Use newline character for plain text formatting
 
         // Set Content-Type to text/plain to ensure newlines are rendered
@@ -154,7 +154,7 @@ app.get("/queue-list", (req, res) => {
 app.get("/next", (req, res) => {
     if (queue.length > 0) {
         const nextItem = queue[0];
-        return res.send(Next in queue: ${nextItem.item} (${nextItem.user}));
+        return res.send(`Next in queue: ${nextItem.item} (${nextItem.user})`);
     } else {
         return res.send("The queue is currently empty.");
     }
@@ -172,9 +172,9 @@ app.post("/add-to-queue", (req, res) => {
     if (queueItem) {
         queue.push({ user, item: queueItem });
         saveQueue(); // Save the queue to the file
-        return res.send(@${user}, your item has been added to the queue! Current queue length: ${queue.length} items.);
+        return res.send(`@${user}, your item has been added to the queue! Current queue length: ${queue.length} items.`);
     } else {
-        return res.send(@${user}, please provide an item to add to the queue. Usage: !queue <item>);
+        return res.send(`@${user}, please provide an item to add to the queue. Usage: !queue <item>`);
     }
 });
 
@@ -184,16 +184,16 @@ app.get("/add-to-queue", (req, res) => {
     const message = req.query.message || "";
 
     if (!queueOpen) {
-        return res.send(@${user}, the queue is currently closed. You cannot add items right now.);
+        return res.send(`@${user}, the queue is currently closed. You cannot add items right now.`);
     }
 
     const queueItem = message.replace("!queue ", "").trim();
     if (queueItem) {
         queue.push({ user, item: queueItem });
         saveQueue(); // Save the queue to the file
-        return res.send(@${user}, your item has been added to the queue! Current queue length: ${queue.length} items.);
+        return res.send(`@${user}, your item has been added to the queue! Current queue length: ${queue.length} items.`);
     } else {
-        return res.send(@${user}, please provide an item to add to the queue. Usage: !queue <item>);
+        return res.send(`@${user}, please provide an item to add to the queue. Usage: !queue <item>`);
     }
 });
 
@@ -220,9 +220,9 @@ app.post("/remove-from-queue", (req, res) => {
     if (!isNaN(position) && position > 0 && position <= queue.length) {
         const removedItem = queue.splice(position - 1, 1); // Remove the item at the given position
         saveQueue(); // Save the updated queue to the file
-        return res.send(@${user}, item #${position} has been removed from the queue!);
+        return res.send(`@${user}, item #${position} has been removed from the queue!`);
     } else {
-        return res.send(@${user}, invalid position. Please provide a valid queue number to remove.);
+        return res.send(`@${user}, invalid position. Please provide a valid queue number to remove.`);
     }
 });
 
@@ -233,7 +233,7 @@ app.get("/remove-from-queue", (req, res) => {
     if (!isNaN(position) && position > 0 && position <= queue.length) {
         const removedItem = queue.splice(position - 1, 1); // Remove the item at the given position
         saveQueue(); // Save the updated queue to the file
-        return res.send(Item #${position} has been removed from the queue!);
+        return res.send(`Item #${position} has been removed from the queue!`);
     } else {
         return res.send("Invalid position. Please provide a valid queue number to remove.");
     }
