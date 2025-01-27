@@ -165,7 +165,7 @@ app.post("/add-to-queue", (req, res) => {
     const { user, message } = req.body;
 
     if (!queueOpen) {
-        return res.send(@${user}, the queue is currently closed. You cannot add items right now.);
+        return res.send(`@${user}, the queue is currently closed. You cannot add items right now.`);
     }
 
     const queueItem = message.replace("!queue ", "").trim();
