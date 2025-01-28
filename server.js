@@ -230,10 +230,34 @@ app.get("/remove-from-queue", (req, res) => {
 app.get("/open-queue", (req, res) => {
     queueOpen = true;
 
+    // Start self-pinging
+    if (!selfPingInterval) {
+        selfPingInterval = setInterval(() => {
+            http.get(projectUrl, (res) => {
+                console.log(`Pinged ${projectUrl}: ${res.statusCode}`);
+            }).on("error", (err) => {
+                console.error(`Error pinging ${projectUrl}: ${err.message}`);
+            });
+        }, 300000); // Ping every 5 minutes (300,000 ms)
+        console.log("Self-pinging activated.");
+    }
+
+    res.send("The queue is now open!");
+});
 
 // Endpoint to close the queue and stop self-pinging
 app.get("/close-queue", (req, res) => {
     queueOpen = false;
+
+    // Stop self-pinging
+    if (selfPingInterval) {
+        clearInterval(selfPingInterval);
+        selfPingInterval = null;
+        console.log("Self-pinging deactivated.");
+    }
+
+    res.send("The queue is now closed!");
+});
 
 
 // Start the server
