@@ -23,7 +23,6 @@ if (fs.existsSync(queueFile)) {
     }
 }
 
-
 // Function to save the queue to the file
 function saveQueue() {
     try {
@@ -32,8 +31,6 @@ function saveQueue() {
         console.error("Error saving queue to file:", err);
     }
 }
-
-
 
 app.get("/randomline", async (req, res) => {
     try {
@@ -51,7 +48,6 @@ app.get("/randomline", async (req, res) => {
     }
 });
 
-
 app.get("/fight", async (req, res) => {
     const pastebinURL = "https://pastebin.com/raw/nwYG6VsA";
     const response = await fetch(pastebinURL);
@@ -60,7 +56,6 @@ app.get("/fight", async (req, res) => {
     const randomLine = lines[Math.floor(Math.random() * lines.length)];
     res.send(randomLine);
 });
-
 
 // Endpoint to fetch and display the entire list from an external URL
 app.get("/quotes", async (req, res) => {
@@ -107,15 +102,11 @@ app.get('/api/fight', (req, res) => {
   res.status(200).send(message);
 });
 
-
-
-
 // Default route
 app.get("/", (req, res) => {
     res.send("Welcome to the Nightbot Queue Manager! Use /queue, /add-to-queue, /clear-queue, /open-queue, /close-queue, or /next.");
   
 });
-
 
 // Endpoint to display the queue in the original format (continuous list for Nightbot)
 app.get("/queue", (req, res) => {
@@ -145,10 +136,6 @@ app.get("/queue-list", (req, res) => {
         return res.send("The queue is currently empty.");
     }
 });
-
-
-
-
 
 // Endpoint to show the next item in the queue
 app.get("/next", (req, res) => {
@@ -243,34 +230,11 @@ app.get("/remove-from-queue", (req, res) => {
 app.get("/open-queue", (req, res) => {
     queueOpen = true;
 
-    // Start self-pinging
-    if (!selfPingInterval) {
-        selfPingInterval = setInterval(() => {
-            http.get(projectUrl, (res) => {
-                console.log(`Pinged ${projectUrl}: ${res.statusCode}`);
-            }).on("error", (err) => {
-                console.error(`Error pinging ${projectUrl}: ${err.message}`);
-            });
-        }, 300000); // Ping every 5 minutes (300,000 ms)
-        console.log("Self-pinging activated.");
-    }
-
-    res.send("The queue is now open!");
-});
 
 // Endpoint to close the queue and stop self-pinging
 app.get("/close-queue", (req, res) => {
     queueOpen = false;
 
-    // Stop self-pinging
-    if (selfPingInterval) {
-        clearInterval(selfPingInterval);
-        selfPingInterval = null;
-        console.log("Self-pinging deactivated.");
-    }
-
-    res.send("The queue is now closed!");
-});
 
 // Start the server
 const PORT = process.env.PORT || 3000;
