@@ -9,7 +9,6 @@ const path = require("path");
 app.use(bodyParser.json());
 app.use("/favicon.ico", express.static(path.join(__dirname, "public/favicon.ico")));
 
-const queueFile = "queue.json"; // File to store the queue persistently
 let queue = []; // Array to store queue items as objects { user, item }
 let queueOpen = false; // Flag to track whether the queue is open
 let selfPingInterval; // Variable to store the self-ping interval ID
