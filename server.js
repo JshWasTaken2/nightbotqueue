@@ -11,27 +11,7 @@ const queueFile = "queue.json"; // File to store the queue persistently
 let queue = []; // Array to store queue items as objects { user, item }
 let queueOpen = true; // Flag to track whether the queue is open
 let selfPingInterval; // Variable to store the self-ping interval ID
-const projectUrl = "https://nightbotqueue.vercel.app/";
-
-
-// Load the queue from the file on server startup
-if (fs.existsSync(queueFile)) {
-    try {
-        queue = JSON.parse(fs.readFileSync(queueFile, "utf-8"));
-    } catch (err) {
-        console.error("Error loading queue from file:", err);
-        queue = [];
-    }
-}
-
-// Function to save the queue to the file
-function saveQueue() {
-    try {
-        fs.writeFileSync(queueFile, JSON.stringify(queue, null, 2), "utf-8");
-    } catch (err) {
-        console.error("Error saving queue to file:", err);
-    }
-}
+const projectUrl = "https://sangsangtwitch.vercel.app/";
 
 app.get("/randomline", async (req, res) => {
     try {
