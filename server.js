@@ -6,6 +6,7 @@ const axios = require("axios");
 const http = require("http");
 
 app.use(bodyParser.json());
+app.use("/favicon.ico", express.static(path.join(__dirname, "public/favicon.ico")));
 
 const queueFile = "queue.json"; // File to store the queue persistently
 let queue = []; // Array to store queue items as objects { user, item }
