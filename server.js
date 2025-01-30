@@ -11,7 +11,7 @@ app.use("/favicon.ico", express.static(path.join(__dirname, "public/favicon.ico"
 
 const queueFile = "queue.json"; // File to store the queue persistently
 let queue = []; // Array to store queue items as objects { user, item }
-let queueOpen = true; // Flag to track whether the queue is open
+let queueOpen = false; // Flag to track whether the queue is open
 let selfPingInterval; // Variable to store the self-ping interval ID
 const projectUrl = "https://sangsangtwitch.vercel.app/";
 
@@ -185,7 +185,6 @@ app.post("/remove-from-queue", (req, res) => {
 
     if (!isNaN(position) && position > 0 && position <= queue.length) {
         const removedItem = queue.splice(position - 1, 1); // Remove the item at the given position
-        saveQueue(); // Save the updated queue to the file
         return res.send(`@${user}, item #${position} has been removed from the queue!`);
     } else {
         return res.send(`@${user}, invalid position. Please provide a valid queue number to remove.`);
