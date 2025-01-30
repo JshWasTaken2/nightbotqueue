@@ -158,7 +158,6 @@ app.get("/add-to-queue", (req, res) => {
     const queueItem = message.replace("!queue ", "").trim();
     if (queueItem) {
         queue.push({ user, item: queueItem });
-        saveQueue(); // Save the queue to the file
         return res.send(`@${user}, your item has been added to the queue! Current queue length: ${queue.length} items.`);
     } else {
         return res.send(`@${user}, please provide an item to add to the queue. Usage: !queue <item>`);
@@ -168,14 +167,12 @@ app.get("/add-to-queue", (req, res) => {
 // POST endpoint to clear the queue
 app.post("/clear-queue", (req, res) => {
     queue = [];
-    saveQueue(); // Save the cleared queue to the file
     return res.send("The queue has been cleared!");
 });
 
 // GET endpoint for /clear-queue (Nightbot-compatible)
 app.get("/clear-queue", (req, res) => {
     queue = [];
-    saveQueue(); // Save the cleared queue to the file
     return res.send("The queue has been cleared!");
 });
 
@@ -200,7 +197,6 @@ app.get("/remove-from-queue", (req, res) => {
 
     if (!isNaN(position) && position > 0 && position <= queue.length) {
         const removedItem = queue.splice(position - 1, 1); // Remove the item at the given position
-        saveQueue(); // Save the updated queue to the file
         return res.send(`Item #${position} has been removed from the queue!`);
     } else {
         return res.send("Invalid position. Please provide a valid queue number to remove.");
