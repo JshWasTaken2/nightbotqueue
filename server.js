@@ -141,7 +141,6 @@ app.post("/add-to-queue", (req, res) => {
     const queueItem = message.replace("!queue ", "").trim();
     if (queueItem) {
         queue.push({ user, item: queueItem });
-        saveQueue(); // Save the queue to the file
         return res.send(`@${user}, your item has been added to the queue! Current queue length: ${queue.length} items.`);
     } else {
         return res.send(`@${user}, please provide an item to add to the queue. Usage: !queue <item>`);
